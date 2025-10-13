@@ -116,7 +116,7 @@ function Cart() {
                           value={item.quantity}
                           onChange={(e) => handleQuantityChange(item.product.id, e.target.value)}
                           InputProps={{ inputProps: { min: 1 } }}
-                          sx={{ width: 80 }}
+                          sx={{ width: '100%' }} 
                         />
                         <IconButton
                           onClick={() => handleRemoveItem(item.product)}
