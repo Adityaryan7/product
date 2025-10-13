@@ -14,6 +14,9 @@ import Cart from "./components/cart";
 import Login from "./components/login";
 import Register from "./components/register";
 import ForgotPassword from "./components/forgotPassword";
+import { store, persistor } from './store/store';
+import { Provider } from "react-redux"; // Import Provider from React-Redux
+import { PersistGate } from "redux-persist/integration/react"; // Import PersistGate from Redux Persist
 import "./App.css";
 
 function Navbar({ onLogout }) {
@@ -71,7 +74,7 @@ function Navbar({ onLogout }) {
 }
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = React.useState(localStorage.getItem("token"));
 
   const handleLoginSuccess = (token) => setToken(token);
   const handleLogout = () => {
@@ -80,30 +83,30 @@ function App() {
   };
 
   return (
-    <Router>
-      {/* Only show Navbar if the user is logged in */}
-      {token && <Navbar onLogout={handleLogout} />}
-
-      <Routes>
-        {/* Public Routes */}
-        {!token ? (
-          <>
-            <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-            <Route path="/register" element={<Register onBackToLogin={() => window.location.replace("/login")} />} />
-            <Route path="/forgot-password" element={<ForgotPassword onBackToLogin={() => window.location.replace("/login")} />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </>
-        ) : (
-          <>
-            {/* Protected Routes */}
-            <Route path="/" element={token ? <ProductList /> : <Navigate to="/login" />} />
-            <Route path="/product/:id" element={token ? <ProductDetail /> : <Navigate to="/login" />} />
-            <Route path="/favorites" element={token ? <Favorites /> : <Navigate to="/login" />} />
-            <Route path="/cart" element={token ? <Cart /> : <Navigate to="/login" />} />
-          </>
-        )}
-      </Routes>
-    </Router>
+    <Provider store={store}> {/* Wrap your app with the Redux Provider */}
+      <PersistGate loading={null} persistor={persistor}> {/* Wait for the persisted state to be rehydrated */}
+        <Router>
+          {token && <Navbar onLogout={handleLogout} />}
+          <Routes>
+            {!token ? (
+              <>
+                <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+                <Route path="/register" element={<Register onBackToLogin={() => window.location.replace("/login")} />} />
+                <Route path="/forgot-password" element={<ForgotPassword onBackToLogin={() => window.location.replace("/login")} />} />
+                <Route path="*" element={<Navigate to="/login" />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<ProductList />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/favorites" element={<Favorites />} />
+                <Route path="/cart" element={<Cart />} />
+              </>
+            )}
+          </Routes>
+        </Router>
+      </PersistGate>
+    </Provider>
   );
 }
 
