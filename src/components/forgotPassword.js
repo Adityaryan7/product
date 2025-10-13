@@ -14,7 +14,6 @@ const ForgotPassword = ({ onBackToLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Fake behavior (since fakestoreapi doesn’t support password reset)
     setMessage(
       `Password reset link has been sent to ${email} (demo simulation).`
     );

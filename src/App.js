@@ -15,8 +15,8 @@ import Login from "./components/login";
 import Register from "./components/register";
 import ForgotPassword from "./components/forgotPassword";
 import { store, persistor } from './store/store';
-import { Provider } from "react-redux"; // Import Provider from React-Redux
-import { PersistGate } from "redux-persist/integration/react"; // Import PersistGate from Redux Persist
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import "./App.css";
 
 function Navbar({ onLogout }) {
@@ -83,8 +83,8 @@ function App() {
   };
 
   return (
-    <Provider store={store}> {/* Wrap your app with the Redux Provider */}
-      <PersistGate loading={null} persistor={persistor}> {/* Wait for the persisted state to be rehydrated */}
+    <Provider store={store}> 
+      <PersistGate loading={null} persistor={persistor}>
         <Router>
           {token && <Navbar onLogout={handleLogout} />}
           <Routes>

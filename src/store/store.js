@@ -1,20 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // localStorage for web
-import { combineReducers } from 'redux'; // Import combineReducers from redux
+import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux'; 
 import productsReducer from '../reducers/productsReducer';
 import favoritesReducer from '../reducers/favoritesReducer';
 import filtersReducer from '../reducers/filtersReducer';
 import cartReducer from '../reducers/cartReducer';
 
-// Persist configuration
+
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['cart', 'favorites'], // Only persist the cart and favorites slices
+  whitelist: ['cart', 'favorites', 'products'], 
 };
 
-// Combine reducers
+
 const rootReducer = combineReducers({
   products: productsReducer,
   filters: filtersReducer,
@@ -22,13 +22,12 @@ const rootReducer = combineReducers({
   favorites: favoritesReducer,
 });
 
-// Create persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Configure store with persisted reducer
+
 export const store = configureStore({
-  reducer: persistedReducer, // Pass the persisted reducer here
+  reducer: persistedReducer, 
 });
 
-// Create persistor
+
 export const persistor = persistStore(store);
