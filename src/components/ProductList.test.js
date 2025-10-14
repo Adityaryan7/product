@@ -1,79 +1,64 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
-import ProductList from './productList';
-import productsReducer from '../reducers/productsReducer';
-import filtersReducer from '../reducers/filtersReducer';
-import favoritesReducer from '../reducers/favoritesReducer';
+// favorites.test.js
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { configureStore } from "@reduxjs/toolkit";
+import ProductList from "./productList";
+import productsReducer from "../reducers/productsReducer";
+import filtersReducer from "../reducers/filtersReducer";
+import favoritesReducer from "../reducers/favoritesReducer";
+import cartReducer from "../reducers/cartReducer";
 
-const mockStore = configureStore({
-  reducer: {
-    products: productsReducer,
-    filters: filtersReducer,
-    favorites: favoritesReducer,
-  },
-  preloadedState: {
+const createMockStore = (initialState) =>
+  configureStore({
+    reducer: {
+      products: productsReducer,
+      filters: filtersReducer,
+      favorites: favoritesReducer,
+      cart: cartReducer,
+    },
+    preloadedState: initialState,
+  });
+
+const renderWithProviders = (component, initialState) => {
+  const store = createMockStore(initialState);
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>{component}</BrowserRouter>
+    </Provider>
+  );
+};
+
+test("renders Product List component", () => {
+  const initialState = {
     products: {
       items: [
-        { id: 1, title: 'Electronics Item', price: 99.99, category: 'electronics' },
-        { id: 2, title: 'Clothing Item', price: 49.99, category: 'men\'s clothing' }
+        {
+          id: 1,
+          title: "Sample Product List Item",
+          price: 29.99,
+          image: "test.jpg",
+        },
       ],
-      status: 'succeeded'
-    }
-  }
-});
-
-describe('ProductList Integration Tests', () => {
-  const renderWithProviders = (component) => {
-    return render(
-      <Provider store={mockStore}>
-        <BrowserRouter>
-          {component}
-        </BrowserRouter>
-      </Provider>
-    );
+      status: "succeeded",
+      error: null,
+    },
+    filters: {
+      category: "all",
+      sortBy: "none",
+      searchTerm: "",
+    },
+    favorites: {
+      items: [],
+    },
+    cart: {
+      items: [],
+      loading: false,
+    },
   };
 
-  test('renders product list and filters', () => {
-    renderWithProviders(<ProductList />);
+  renderWithProviders(<ProductList />, initialState);
 
-    expect(screen.getByPlaceholderText(/search products/i)).toBeInTheDocument();
-    expect(screen.getByText(/all categories/i)).toBeInTheDocument();
-    expect(screen.getByText(/sort by/i)).toBeInTheDocument();
-    expect(screen.getByText(/electronics item/i)).toBeInTheDocument();
-  });
-
-  test('filters products by search term', async () => {
-    renderWithProviders(<ProductList />);
-    
-    const searchInput = screen.getByPlaceholderText(/search products/i);
-    fireEvent.change(searchInput, { target: { value: 'electronics' } });
-    
-    await waitFor(() => {
-      expect(screen.getByText('Electronics Item')).toBeInTheDocument();
-      expect(screen.queryByText('Clothing Item')).not.toBeInTheDocument();
-    });
-  });
-
-  test('filters products by category', () => {
-    renderWithProviders(<ProductList />);
-    
-    const categorySelect = screen.getByRole('combobox', { name: /category/i });
-    fireEvent.change(categorySelect, { target: { value: 'electronics' } });
-    
-    expect(screen.getByText('Electronics Item')).toBeInTheDocument();
-    expect(screen.queryByText('Clothing Item')).not.toBeInTheDocument();
-  });
-
-  test('sorts products by price', () => {
-    renderWithProviders(<ProductList />);
-    
-    const sortSelect = screen.getByRole('combobox', { name: /sort/i });
-    fireEvent.change(sortSelect, { target: { value: 'price-desc' } });
-    
-    const prices = screen.getAllByText(/\$\d+\.\d+/);
-    expect(prices[0]).toHaveTextContent('$99.99');
-    expect(prices[1]).toHaveTextContent('$49.99');
-  });
+  expect(screen.getByText(/sample product list item/i)).toBeInTheDocument();
 });

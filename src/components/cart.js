@@ -28,6 +28,7 @@ function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items);
+  const loading = useSelector((state) => state.cart.loading); // added
 
   const handleRemoveItem = (product) => {
     dispatch(removeFromCartStart());
@@ -46,8 +47,17 @@ function Cart() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      {loading && ( // added loading UI
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body2">Loading...</Typography>
+        </Box>
+      )}
       <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-        <IconButton onClick={() => navigate(-1)} color="inherit">
+        <IconButton
+          onClick={() => navigate(-1)}
+          color="inherit"
+          aria-label="Back"
+        >
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" fontWeight={600}>
@@ -73,7 +83,7 @@ function Cart() {
         </Paper>
       ) : (
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid xs={12} md={8}>
             <Paper sx={{ p: 2 }}>
               {cartItems.map((item) => (
                 <Box key={item.product.id}>
@@ -123,6 +133,7 @@ function Cart() {
                       >
                         <IconButton
                           size="small"
+                          aria-label="Decrease quantity" // added
                           onClick={() => {
                             if (item.quantity > 1) {
                               dispatch(
@@ -136,7 +147,6 @@ function Cart() {
                         >
                           <RemoveIcon />
                         </IconButton>
-
                         <Box
                           sx={{
                             minWidth: 36,
@@ -149,9 +159,9 @@ function Cart() {
                         >
                           {item.quantity}
                         </Box>
-
                         <IconButton
                           size="small"
+                          aria-label="Increase quantity" // added
                           onClick={() =>
                             dispatch(
                               updateQuantity({
@@ -163,11 +173,11 @@ function Cart() {
                         >
                           <AddIcon />
                         </IconButton>
-
                         <IconButton
                           onClick={() => handleRemoveItem(item.product)}
                           color="error"
                           size="small"
+                          aria-label="Remove" // added
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -180,7 +190,7 @@ function Cart() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Order Summary
@@ -213,9 +223,14 @@ function Cart() {
                     justifyContent: "space-between",
                     mb: 2,
                   }}
+                  aria-label="order-total" // optional, helps tests
                 >
                   <Typography variant="h6">Total</Typography>
-                  <Typography variant="h6" color="primary">
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    data-testid="cart-total"
+                  >
                     ${calculateTotal().toFixed(2)}
                   </Typography>
                 </Box>
