@@ -7,6 +7,9 @@
 
 # testing
 /coverage
+# Allow committing coverage for review (unignore)
+!coverage
+!coverage/**
 
 # production
 /build
