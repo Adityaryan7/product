@@ -14,6 +14,8 @@ A React + Redux Toolkit product dashboard using the Fake Store API.
 - npm run test:coverage
 See coverage reports in ./coverage and open ./coverage/lcov-report/index.html in a browser.
 
+- If you want to see the test results, open the HTML report at [coverage/lcov-report/index.html](coverage/lcov-report/index.html). You can also check [coverage/clover.xml](coverage/clover.xml), [coverage/lcov.info](coverage/lcov.info), or [coverage/coverage-final.json](coverage/coverage-final.json) for raw coverage data.
+
 ## Build
 - npm run build
 
