@@ -8,6 +8,7 @@ import {
   removeFromFavoritesSuccess,
 } from "../reducers/favoritesReducer";
 import { addToCartStart, addToCartSuccess } from "../reducers/cartReducer";
+import { useSnackbar } from "../context/SnackbarContext";
 import {
   Container,
   Grid,
@@ -32,11 +33,12 @@ function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { showSuccess } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const product = useSelector((state) =>
-    state.products.items.find((item) => item.id === parseInt(id))
+    state.products.items.find((item) => item.id === parseInt(id)),
   );
   const favorites = useSelector((state) => state.favorites.items);
   const isFavorite = favorites.some((item) => item.id === product?.id);
@@ -56,12 +58,14 @@ function ProductDetail() {
       dispatch(removeFromFavoritesStart());
       setTimeout(() => {
         dispatch(removeFromFavoritesSuccess(product));
+        showSuccess("Removed from favorites");
         setIsLoading(false);
       }, 700);
     } else {
       dispatch(addToFavoritesStart());
       setTimeout(() => {
         dispatch(addToFavoritesSuccess(product));
+        showSuccess("Added to favorites");
         setIsLoading(false);
       }, 700);
     }
@@ -72,6 +76,7 @@ function ProductDetail() {
     dispatch(addToCartStart());
     setTimeout(() => {
       dispatch(addToCartSuccess(product));
+      showSuccess("Added to cart");
       setIsAddingToCart(false);
     }, 700);
   };

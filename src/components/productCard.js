@@ -8,6 +8,7 @@ import {
   removeFromFavoritesSuccess,
 } from "../reducers/favoritesReducer";
 import { addToCartStart, addToCartSuccess } from "../reducers/cartReducer";
+import { useSnackbar } from "../context/SnackbarContext";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import InfoIcon from "@mui/icons-material/Info";
@@ -25,6 +26,7 @@ import {
 
 function ProductCard({ product }) {
   const dispatch = useDispatch();
+  const { showSuccess } = useSnackbar();
   const favorites = useSelector((state) => state.favorites.items);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -38,12 +40,14 @@ function ProductCard({ product }) {
       dispatch(removeFromFavoritesStart());
       setTimeout(() => {
         dispatch(removeFromFavoritesSuccess(product));
+        showSuccess("Removed from favorites");
         setIsLoading(false);
       }, 700);
     } else {
       dispatch(addToFavoritesStart());
       setTimeout(() => {
         dispatch(addToFavoritesSuccess(product));
+        showSuccess("Added to favorites");
         setIsLoading(false);
       }, 700);
     }
@@ -55,6 +59,7 @@ function ProductCard({ product }) {
     dispatch(addToCartStart());
     setTimeout(() => {
       dispatch(addToCartSuccess(product));
+      showSuccess("Added to cart");
       setIsAddingToCart(false);
     }, 700);
   };

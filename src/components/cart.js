@@ -16,6 +16,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import { useSnackbar } from "../context/SnackbarContext";
 
 import {
   removeFromCartStart,
@@ -27,21 +28,36 @@ import {
 function Cart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useSnackbar();
   const cartItems = useSelector((state) => state.cart.items);
-  const loading = useSelector((state) => state.cart.loading); // added
+  const loading = useSelector((state) => state.cart.loading);
 
   const handleRemoveItem = (product) => {
     dispatch(removeFromCartStart());
     setTimeout(() => {
       dispatch(removeFromCartSuccess(product));
+      showSuccess(`${product.title} removed from cart`);
     }, 300);
+  };
+
+  const handleClearCart = () => {
+    dispatch(clearCart());
+    showSuccess("Cart cleared");
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      showError("Your cart is empty!");
+      return;
+    }
+    navigate("/checkout");
   };
 
   const calculateTotal = () => {
     return cartItems.reduce(
       (total, item) =>
         total + item.product.price * parseInt(item.quantity || 1),
-      0
+      0,
     );
   };
 
@@ -140,7 +156,7 @@ function Cart() {
                                 updateQuantity({
                                   productId: item.product.id,
                                   quantity: item.quantity - 1,
-                                })
+                                }),
                               );
                             }
                           }}
@@ -167,7 +183,7 @@ function Cart() {
                               updateQuantity({
                                 productId: item.product.id,
                                 quantity: item.quantity + 1,
-                              })
+                              }),
                             )
                           }
                         >
@@ -235,14 +251,16 @@ function Cart() {
                   </Typography>
                 </Box>
               </Box>
-              <Button variant="contained" fullWidth size="large" sx={{ mb: 2 }}>
+              <Button
+                variant="contained"
+                fullWidth
+                size="large"
+                sx={{ mb: 2 }}
+                onClick={handleCheckout}
+              >
                 Checkout
               </Button>
-              <Button
-                variant="outlined"
-                fullWidth
-                onClick={() => dispatch(clearCart())}
-              >
+              <Button variant="outlined" fullWidth onClick={handleClearCart}>
                 Clear Cart
               </Button>
             </Paper>

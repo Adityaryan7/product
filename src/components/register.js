@@ -8,8 +8,10 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+import { useSnackbar } from "../context/SnackbarContext";
 
 const Register = ({ onBackToLogin }) => {
+  const { showSuccess, showError } = useSnackbar();
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -31,6 +33,16 @@ const Register = ({ onBackToLogin }) => {
     setLoading(true);
 
     try {
+      if (
+        !formData.firstname ||
+        !formData.lastname ||
+        !formData.email ||
+        !formData.username ||
+        !formData.password
+      ) {
+        throw new Error("All fields are required");
+      }
+
       const res = await fetch("https://fakestoreapi.com/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -57,6 +69,7 @@ const Register = ({ onBackToLogin }) => {
 
       const data = await res.json();
       setSuccess("User registered successfully!");
+      showSuccess("Registration successful! Please login.");
       setFormData({
         email: "",
         username: "",
@@ -64,8 +77,10 @@ const Register = ({ onBackToLogin }) => {
         firstname: "",
         lastname: "",
       });
+      setTimeout(() => onBackToLogin(), 2000);
     } catch (err) {
       setError(err.message);
+      showError(err.message);
     } finally {
       setLoading(false);
     }
@@ -78,8 +93,7 @@ const Register = ({ onBackToLogin }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background:
-          "linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)",
+        background: "linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)",
       }}
     >
       <Paper elevation={6} sx={{ p: 4, width: 380, borderRadius: 3 }}>
@@ -155,7 +169,11 @@ const Register = ({ onBackToLogin }) => {
             sx={{ mt: 2, py: 1 }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "Register"
+            )}
           </Button>
 
           <Button

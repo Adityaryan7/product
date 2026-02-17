@@ -9,6 +9,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "../context/SnackbarContext";
 
 const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState("");
@@ -16,6 +17,7 @@ const Login = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { showSuccess, showError } = useSnackbar();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,6 +25,10 @@ const Login = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
+      if (!username || !password) {
+        throw new Error("Username and password are required");
+      }
+
       const res = await fetch("https://fakestoreapi.com/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,10 +42,12 @@ const Login = ({ onLoginSuccess }) => {
 
       const data = await res.json();
       localStorage.setItem("token", data.token);
+      showSuccess("Login successful!");
       onLoginSuccess(data.token);
-      navigate("/"); 
+      navigate("/");
     } catch (err) {
       setError(err.message);
+      showError(err.message);
     } finally {
       setLoading(false);
     }
@@ -120,11 +128,21 @@ const Login = ({ onLoginSuccess }) => {
             <br /> <strong>Password:</strong> 83r5^_
           </Typography>
 
-          <Button fullWidth variant="text" sx={{ mt: 2 }} onClick={goToRegister}>
+          <Button
+            fullWidth
+            variant="text"
+            sx={{ mt: 2 }}
+            onClick={goToRegister}
+          >
             Create New Account
           </Button>
 
-          <Button fullWidth variant="text" sx={{ mt: 0 }} onClick={goToForgotPassword}>
+          <Button
+            fullWidth
+            variant="text"
+            sx={{ mt: 0 }}
+            onClick={goToForgotPassword}
+          >
             Forgot Password?
           </Button>
         </form>

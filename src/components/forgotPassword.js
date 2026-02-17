@@ -7,16 +7,23 @@ import {
   Button,
   Alert,
 } from "@mui/material";
+import { useSnackbar } from "../context/SnackbarContext";
 
 const ForgotPassword = ({ onBackToLogin }) => {
+  const { showSuccess, showError } = useSnackbar();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!email) {
+      showError("Please enter your email address");
+      return;
+    }
     setMessage(
-      `Password reset link has been sent to ${email} (demo simulation).`
+      `Password reset link has been sent to ${email} (demo simulation).`,
     );
+    showSuccess("Password reset link sent!");
     setEmail("");
   };
 
@@ -27,8 +34,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background:
-          "linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)",
+        background: "linear-gradient(135deg, #2196f3 0%, #21cbf3 100%)",
       }}
     >
       <Paper elevation={6} sx={{ p: 4, width: 360, borderRadius: 3 }}>
